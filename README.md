@@ -121,6 +121,21 @@ environment without running the tests, run `uv sync`.
 
 The tests mock the Garmin API, so they don't need an API key or network access.
 
+### Releasing
+
+Push a tag to create a release:
+
+```shell
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+The release workflow runs the lint and tests, then publishes a GitHub release
+with `garmin_connect_personal.zip`, which HACS installs. The version in the
+zip's `manifest.json` is taken from the tag, so `manifest.json` doesn't need to
+be changed for a release. Tags with a suffix, such as `v0.2.0-beta.1`, become
+pre-releases.
+
 ## Credits
 
 Built on Garmin's [connect-personal-api-python](https://github.com/garmin/connect-personal-api-python)

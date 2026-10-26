@@ -1,5 +1,7 @@
 {
     "name": "Garmin Connect Personal",
     "homeassistant": "2026.6.4",
-    "hacs": "2.0.5"
+    "hacs": "2.0.5",
+    "zip_release": true,
+    "filename": "garmin_connect_personal.zip"
 }

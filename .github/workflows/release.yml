@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    name: Release
+    needs: ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The zip's manifest.json gets the version from the tag (v1.2.3 -> 1.2.3).
+      # HACS extracts the zip into custom_components/garmin_connect_personal.
+      - name: Build zip
+        run: |
+          cp -r custom_components/garmin_connect_personal build
+          jq --arg version "${TAG#v}" '.version = $version' \
+            custom_components/garmin_connect_personal/manifest.json > build/manifest.json
+          (cd build && zip -r ../garmin_connect_personal.zip . -x '*__pycache__*')
+
+      # Tags with a suffix (v1.2.3-beta.1) become pre-releases, which HACS only
+      # offers to users who enabled beta versions for this repository.
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" garmin_connect_personal.zip \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --generate-notes \
+            $([[ "$TAG" == *-* ]] && echo --prerelease)
