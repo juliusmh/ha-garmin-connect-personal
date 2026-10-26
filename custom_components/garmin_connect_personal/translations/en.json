@@ -1,0 +1,71 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "description": "Connect one person. Create a Personal API key at {api_key_url}. Add the integration again for each additional person.",
+                "data": {
+                    "api_key": "API key"
+                }
+            },
+            "reauth_confirm": {
+                "title": "Re-authenticate {name}",
+                "description": "Garmin rejected the API key of {name}. Create a new one at {api_key_url}.",
+                "data": {
+                    "api_key": "API key"
+                }
+            }
+        },
+        "error": {
+            "auth": "The API key is invalid.",
+            "connection": "Unable to connect to Garmin Connect.",
+            "unknown": "Unknown error occurred."
+        },
+        "abort": {
+            "already_configured": "This person is already configured.",
+            "reauth_successful": "Re-authentication was successful.",
+            "wrong_account": "This API key belongs to a different person."
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "is_awake": {
+                "name": "Is awake"
+            }
+        },
+        "sensor": {
+            "sleep_score": {
+                "name": "Sleep score"
+            },
+            "sleep_duration": {
+                "name": "Sleep duration"
+            },
+            "deep_sleep_duration": {
+                "name": "Deep sleep"
+            },
+            "light_sleep_duration": {
+                "name": "Light sleep"
+            },
+            "rem_sleep_duration": {
+                "name": "REM sleep"
+            },
+            "awake_duration": {
+                "name": "Awake time during sleep"
+            },
+            "awake_count": {
+                "name": "Times awake during sleep"
+            },
+            "sleep_heart_rate": {
+                "name": "Average heart rate during sleep"
+            },
+            "sleep_respiration": {
+                "name": "Average respiration during sleep"
+            },
+            "sleep_stress": {
+                "name": "Average stress during sleep"
+            },
+            "last_sync": {
+                "name": "Last sync"
+            }
+        }
+    }
+}
