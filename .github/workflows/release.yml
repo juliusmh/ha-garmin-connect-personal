@@ -25,6 +25,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 0
 
       # The zip's manifest.json gets the version from the tag (v1.2.3 -> 1.2.3).
       # HACS extracts the zip into custom_components/garmin_connect_personal.
@@ -35,6 +36,24 @@ jobs:
             custom_components/garmin_connect_personal/manifest.json > build/manifest.json
           (cd build && zip -r ../garmin_connect_personal.zip . -x '*__pycache__*')
 
+      # Lists the commits since the previous release. A stable release is
+      # compared with the previous stable release, so it includes the changes
+      # of the pre-releases in between.
+      - name: Write changelog
+        run: |
+          exclude=()
+          if [[ "$TAG" != *-* ]]; then exclude=(--exclude 'v*-*'); fi
+          previous=$(git describe --tags --abbrev=0 --match 'v*' "${exclude[@]}" "$TAG^" 2>/dev/null || true)
+          {
+            echo "## Changes"
+            echo
+            git log --no-merges --format='- %s (%h)' "${previous:+$previous..}$TAG"
+            if [[ -n "$previous" ]]; then
+              echo
+              echo "**Full changelog:** https://github.com/$GITHUB_REPOSITORY/compare/$previous...$TAG"
+            fi
+          } > changelog.md
+
       # Tags with a suffix (v1.2.3-beta.1) become pre-releases, which HACS only
       # offers to users who enabled beta versions for this repository.
       - name: Create release
@@ -44,5 +63,5 @@ jobs:
           gh release create "$TAG" garmin_connect_personal.zip \
             --repo "$GITHUB_REPOSITORY" \
             --title "$TAG" \
-            --generate-notes \
+            --notes-file changelog.md \
             $([[ "$TAG" == *-* ]] && echo --prerelease)
